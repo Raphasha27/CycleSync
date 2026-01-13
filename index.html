@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CycleSync | Premium Bicycle Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Login View (Overlay) -->
+    <div id="view-login" class="">
+        <div class="login-card fade-in">
+            <div class="brand" style="justify-content: center; font-size: 2rem; margin-bottom: 1rem;">
+                <i class="fa-solid fa-bicycle" style="color: var(--primary);"></i>
+                <span>CycleSync</span>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Premium Fleet Management</p>
+            <form onsubmit="app.handleLogin(event)">
+                <div class="form-group">
+                    <input type="text" class="form-input" placeholder="Username (admin)" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-input" placeholder="Password (admin)" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                    Login Access
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" onclick="app.toggleMobileMenu()" id="menu-toggle">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <!-- Main App Container -->
+    <div id="main-app" class="app-container hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-bicycle fa-lg" style="color: var(--primary);"></i>
+                <span>CycleSync</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="nav-item active" data-view="dashboard" onclick="app.navigate('dashboard')">
+                    <i class="fa-solid fa-chart-grid"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item" data-view="inventory" onclick="app.navigate('inventory')">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Inventory</span>
+                </div>
+                <div class="nav-item" data-view="customers" onclick="app.navigate('customers')">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Customers</span>
+                    <span class="badge badge-new">New</span>
+                </div>
+                <div class="nav-item" data-view="history" onclick="app.navigate('history')">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>History</span>
+                </div>
+                <div class="nav-item" data-view="maintenance" onclick="app.navigate('maintenance')">
+                    <i class="fa-solid fa-wrench"></i>
+                    <span>Maintenance</span>
+                </div>
+            </nav>
+
+            <div class="user-profile">
+                <div class="avatar">DA</div>
+                <div class="user-info">
+                    <h4>Admin User</h4>
+                    <p>System Manager</p>
+                </div>
+                <button onclick="app.logout()" style="background:none; margin-left:auto; color:var(--text-muted);">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="page-title">
+                    <h1 id="page-heading">Dashboard</h1>
+                    <p id="page-subheading">Overview of your operations</p>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-glass" onclick="app.toggleTheme()">
+                         <i class="fa-solid fa-sun" id="theme-icon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dynamic Views -->
+            <div id="content-area" class="fade-in">
+                
+                <!-- Dashboard -->
+                <div id="view-dashboard" class="view-section">
+                    <div class="dashboard-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(0, 229, 255, 0.1); color: var(--primary);">
+                                <i class="fa-solid fa-bicycle"></i>
+                            </div>
+                            <h3 id="stat-total">0</h3>
+                            <p>Total Fleet</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(112, 0, 255, 0.1); color: var(--secondary);">
+                                <i class="fa-solid fa-user-clock"></i>
+                            </div>
+                            <h3 id="stat-rented">0</h3>
+                            <p>Currently Rented</p>
+                        </div>
+                         <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(0, 230, 118, 0.1); color: var(--success);">
+                                <i class="fa-solid fa-wallet"></i>
+                            </div>
+                            <h3 id="stat-revenue">$0</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+
+                    <!-- Revenue Chart Area -->
+                    <div class="chart-container">
+                        <div class="section-header">
+                            <h2>Revenue Trends</h2>
+                            <select class="form-input" style="width: auto; padding: 0.5rem;">
+                                <option>Last 7 Days</option>
+                                <option>This Month</option>
+                            </select>
+                        </div>
+                        <canvas id="revenueChart" style="width: 100%; height: 250px;"></canvas>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="section-header">
+                            <h2>Recent Rentals</h2>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Bike</th>
+                                    <th>Renter</th>
+                                    <th>Start Time</th>
+                                    <th>Revenue Est.</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboard-table">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Inventory -->
+                <div id="view-inventory" class="view-section hidden">
+                    <div class="table-container">
+                        <div class="section-header">
+                            <h2>Fleet Inventory</h2>
+                            
+                            <!-- Search & Action Bar -->
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <div class="search-wrapper">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <input type="text" 
+                                           class="search-input" 
+                                           placeholder="Search model or ID..."
+                                           oninput="app.filterInventory(this.value)">
+                                </div>
+                                <button class="btn btn-primary" onclick="app.openModal('bike-modal')">
+                                    <i class="fa-solid fa-plus"></i> Add
+                                </button>
+                                <button class="btn btn-glass" onclick="app.exportData()">
+                                    <i class="fa-solid fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Model</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Price/Hr</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-table">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Customers View -->
+                <div id="view-customers" class="view-section hidden">
+                    <div class="customer-grid" id="customer-grid">
+                        <!-- Populated via JS -->
+                    </div>
+
+                    <div class="table-container">
+                        <div class="section-header">
+                            <h2>All Customers</h2>
+                            <button class="btn btn-primary" onclick="app.openModal('customer-modal')">
+                                <i class="fa-solid fa-user-plus"></i> New Customer
+                            </button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Total Rentals</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customer-table">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Rental History View -->
+                <div id="view-history" class="view-section hidden">
+                    <div class="table-container">
+                        <div class="section-header">
+                            <h2>Complete Rental History</h2>
+                            <div style="display: flex; gap: 1rem;">
+                                <select class="form-input" style="width: auto; padding: 0.5rem;" onchange="app.filterHistory(this.value)">
+                                    <option value="all">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="completed">Completed</option>
+                                </select>
+                                <button class="btn btn-glass" onclick="app.exportHistory()">
+                                    <i class="fa-solid fa-file-export"></i> Export
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Timeline View -->
+                        <div class="timeline" id="history-timeline">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Maintenance View -->
+                <div id="view-maintenance" class="view-section hidden">
+                    <div class="dashboard-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(255, 196, 0, 0.1); color: var(--warning);">
+                                <i class="fa-solid fa-tools"></i>
+                            </div>
+                            <h3 id="stat-maintenance-count">0</h3>
+                            <p>In Maintenance</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(0, 230, 118, 0.1); color: var(--success);">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            <h3 id="stat-maintenance-completed">0</h3>
+                            <p>Completed This Month</p>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="section-header">
+                            <h2>Maintenance Schedule</h2>
+                            <button class="btn btn-primary" onclick="app.scheduleMaintenance()">
+                                <i class="fa-solid fa-calendar-plus"></i> Schedule
+                            </button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Bike ID</th>
+                                    <th>Issue/Type</th>
+                                    <th>Priority</th>
+                                    <th>Scheduled</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="maintenance-table">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    
+    <!-- Add Bike Modal -->
+    <div id="bike-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Add Bike</h2>
+                <button class="close-modal" onclick="app.closeModal('bike-modal')">&times;</button>
+            </div>
+            <form onsubmit="app.handleAddBike(event)">
+                <div class="form-group">
+                    <label>Model Name</label>
+                    <input type="text" name="model" class="form-input" required placeholder="e.g. Mountain X1">
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select name="type" class="form-input">
+                        <option>Mountain</option>
+                        <option>City</option>
+                        <option>Road</option>
+                        <option>Electric</option>
+                        <option>Kids</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Hourly Price ($)</label>
+                    <input type="number" name="price" class="form-input" value="15.00" step="0.50" min="1" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Add to Fleet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Rent Bike Modal (Dynamic) -->
+    <div id="rent-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Rent Bike</h2>
+                <button class="close-modal" onclick="app.closeModal('rent-modal')">&times;</button>
+            </div>
+            <form onsubmit="app.processRent(event)">
+                <input type="hidden" id="rent-bike-id" name="bikeId">
+                <div class="form-group">
+                    <label>Bike Model</label>
+                    <input type="text" id="rent-bike-model" class="form-input" readonly style="opacity: 0.6;">
+                </div>
+                <div class="form-group">
+                    <label>Customer Name</label>
+                    <input type="text" name="customer" class="form-input" required placeholder="Enter customer name">
+                </div>
+                <div class="form-group">
+                    <label>Duration (Hours)</label>
+                    <input type="number" name="duration" class="form-input" value="2" min="1" max="24" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Confirm Rental</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Customer Modal -->
+    <div id="customer-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>New Customer</h2>
+                <button class="close-modal" onclick="app.closeModal('customer-modal')">&times;</button>
+            </div>
+            <form onsubmit="app.handleAddCustomer(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name" class="form-input" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" class="form-input" required placeholder="john@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" name="phone" class="form-input" placeholder="+1 (555) 123-4567">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Add Customer</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
