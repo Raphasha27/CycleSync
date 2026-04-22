@@ -1,9 +1,10 @@
-# CycleSync - Premium Bicycle Management System v2.0
+# 🚲 KIROV DYNAMICS | CYCLESYNC v2.0
 
-[![Live Demo](https://img.shields.io/badge/Demo-Live-success?style=for-the-badge)](https://raphasha27.github.io/CycleSync/)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?style=for-the-badge&logo=github)](https://github.com/Raphasha27/CycleSync)
+[![Kirov Dynamics](https://img.shields.io/badge/Kirov_Dynamics-AI_Reliability-002D62?style=for-the-badge&labelColor=0d1117)](https://github.com/Raphasha27)
+![Role](https://img.shields.io/badge/Role-AI_Reliability_Engineer-blue?style=for-the-badge&labelColor=0d1117)
 
-A cutting-edge, feature-rich Bicycle Management System built with Vanilla JavaScript and Premium Glassmorphism UI.
+**CycleSync** is a high-performance, feature-rich Bicycle Management System designed for extreme reliability and seamless operations. Developed by **Kirov Dynamics Technology**, it demonstrates elite **AI Reliability Engineering** through zero-dependency, high-availability architecture.
+
 
 ![CycleSync Dashboard](screenshots/02-dashboard.png)
 
