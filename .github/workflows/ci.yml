@@ -10,7 +10,8 @@ on:
 jobs:
   build_and_scan: 
     name: Build & Security Scan
-    runs-on: - uses: actions/checkout@v4
+    runs-on: -
+    uses: actions/checkout@v4
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
